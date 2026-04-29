@@ -25,3 +25,5 @@ out/
 .mvn/
 .vscode/
 bin/
+usuarios.db
+usuarios.json
