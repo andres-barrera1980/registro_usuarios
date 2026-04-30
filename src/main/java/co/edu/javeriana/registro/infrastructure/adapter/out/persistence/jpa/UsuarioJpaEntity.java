@@ -30,6 +30,13 @@ public class UsuarioJpaEntity {
     @Column(nullable = false)
     private LocalDateTime fechaRegistro;
 
+    private String passwordHash;
+
+    @Column(nullable = false)
+    private int intentosFallidos = 0;
+
+    private LocalDateTime fechaBloqueo;
+
     public UsuarioJpaEntity() {}
 
     // Getters and Setters
@@ -53,4 +60,13 @@ public class UsuarioJpaEntity {
 
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
     public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+    public int getIntentosFallidos() { return intentosFallidos; }
+    public void setIntentosFallidos(int intentosFallidos) { this.intentosFallidos = intentosFallidos; }
+
+    public LocalDateTime getFechaBloqueo() { return fechaBloqueo; }
+    public void setFechaBloqueo(LocalDateTime fechaBloqueo) { this.fechaBloqueo = fechaBloqueo; }
 }

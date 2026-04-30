@@ -53,6 +53,17 @@ public class SqliteUsuarioGateway implements UsuarioGateway {
     }
 
     @Override
+    public Optional<Usuario> buscarPorId(String id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            UsuarioJpaEntity entity = em.find(UsuarioJpaEntity.class, id);
+            return entity != null ? Optional.of(toDomain(entity)) : Optional.empty();
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public List<Usuario> buscarCuentasInactivasExpiradas(LocalDateTime fechaCorte) {
         EntityManager em = emf.createEntityManager();
         try {
@@ -96,6 +107,9 @@ public class SqliteUsuarioGateway implements UsuarioGateway {
         entity.setEmail(domain.getEmail());
         entity.setEstado(domain.getEstado().name());
         entity.setFechaRegistro(domain.getFechaRegistro());
+        entity.setPasswordHash(domain.getPasswordHash());
+        entity.setIntentosFallidos(domain.getIntentosFallidos());
+        entity.setFechaBloqueo(domain.getFechaBloqueo());
         
         if (domain.getCodigoValidacionActivo() != null) {
             entity.setCodigoValidacion(domain.getCodigoValidacionActivo().getCodigo());
@@ -114,6 +128,18 @@ public class SqliteUsuarioGateway implements UsuarioGateway {
             java.lang.reflect.Field fechaRegistroField = Usuario.class.getDeclaredField("fechaRegistro");
             fechaRegistroField.setAccessible(true);
             fechaRegistroField.set(u, entity.getFechaRegistro());
+
+            java.lang.reflect.Field passwordHashField = Usuario.class.getDeclaredField("passwordHash");
+            passwordHashField.setAccessible(true);
+            passwordHashField.set(u, entity.getPasswordHash());
+
+            java.lang.reflect.Field intentosFallidosField = Usuario.class.getDeclaredField("intentosFallidos");
+            intentosFallidosField.setAccessible(true);
+            intentosFallidosField.set(u, entity.getIntentosFallidos());
+
+            java.lang.reflect.Field fechaBloqueoField = Usuario.class.getDeclaredField("fechaBloqueo");
+            fechaBloqueoField.setAccessible(true);
+            fechaBloqueoField.set(u, entity.getFechaBloqueo());
 
             if (entity.getCodigoValidacion() != null && entity.getFechaExpiracionCodigo() != null) {
                 CodigoValidacion cv = new CodigoValidacion(entity.getCodigoValidacion(), entity.getFechaExpiracionCodigo());

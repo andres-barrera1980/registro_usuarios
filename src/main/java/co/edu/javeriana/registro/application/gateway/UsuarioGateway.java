@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface UsuarioGateway {
     void guardar(Usuario usuario);
     Optional<Usuario> buscarPorEmail(String email);
+    Optional<Usuario> buscarPorId(String id);
     List<Usuario> buscarCuentasInactivasExpiradas(LocalDateTime fechaCorte);
     void eliminar(Usuario usuario);
 }
