@@ -7,8 +7,8 @@ A continuación presento el diseño propuesto basado estrictamente en los princi
 El dominio encapsula las reglas de negocio críticas. Utilizaremos el patrón **Aggregate Root** centrado en el usuario.
 
 *   **`Usuario` (Entity / Aggregate Root)**: Representa al usuario del sistema.
-    *   *Atributos*: `id`, `email`, `estado` (Enum), `codigoValidacionActivo` (Value Object), `fechaRegistro`.
-    *   *Comportamientos*: `asignarNuevoCodigo(CodigoValidacion)`, `activarCuenta(String codigoRecibido)`, `esElegibleParaLimpieza(fechaActual)`.
+    *   *Atributos*: `id`, `email`, `passwordHash`, `estado` (Enum), `codigoValidacionActivo` (Value Object), `fechaRegistro`.
+    *   *Comportamientos*: `asignarNuevoCodigo(CodigoValidacion)`, `activarCuenta(String codigoRecibido)`, `esElegibleParaLimpieza(fechaActual)`, `verificarPassword(String, PasswordHasher)`.
 *   **`EstadoUsuario` (Enum)**: Representa los estados posibles de la cuenta.
     *   *Valores*: `NO_VERIFICADO`, `ACTIVO`, `CADUCADO`.
 *   **`CodigoValidacion` (Value Object)**: Encapsula el código y su temporalidad.
@@ -27,6 +27,9 @@ En Clean Architecture, los Casos de Uso definen las interfaces que necesitan (In
     *   `eliminar(Usuario usuario)`
 *   **`EmailGateway` (Interface)**: Abstracción para enviar comunicaciones.
     *   `enviarCodigoValidacion(String emailDestino, String codigo)`
+*   **`PasswordHasher` (Domain Port / Interface)**: Abstracción de seguridad para el encriptado y validación de contraseñas.
+    *   `hash(String plainTextPassword)`
+    *   `verify(String plainTextPassword, String hash)`
 
 ## 3. Clases de Casos de Uso (Use Case Interactors)
 

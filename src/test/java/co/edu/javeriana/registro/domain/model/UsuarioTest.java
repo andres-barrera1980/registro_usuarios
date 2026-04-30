@@ -14,15 +14,41 @@ class UsuarioTest {
     private Usuario usuario;
     private LocalDateTime ahora;
 
+    // Stub simple para tests: el hash es simplemente "HASHED:" + rawPassword
+    private final PasswordHasher stubHasher = new PasswordHasher() {
+        @Override
+        public String hash(String rawPassword) { return "HASHED:" + rawPassword; }
+        @Override
+        public boolean matches(String rawPassword, String hashedPassword) {
+            return hashedPassword.equals("HASHED:" + rawPassword);
+        }
+    };
+
     @BeforeEach
     void setUp() {
-        usuario = new Usuario("1", "Andres", "andres@mail.com");
+        usuario = new Usuario("1234567890", "Andres", "andres@mail.com", "Passw0rd!", stubHasher);
         ahora = LocalDateTime.now();
     }
 
     @Test
     void deberiaTenerEstadoNoVerificadoAlCrear() {
         assertEquals(EstadoUsuario.NO_VERIFICADO, usuario.getEstado());
+    }
+
+    @Test
+    void deberiaLanzarExcepcionConEmailInvalido() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            new Usuario("1234567890", "Andres", "correo-invalido", "Passw0rd!", stubHasher);
+        });
+        assertEquals("Por favor ingrese una dirección de correo electrónico válida", exception.getMessage());
+    }
+
+    @Test
+    void deberiaLanzarExcepcionConEmailInvalidoAlRehidratar() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            new Usuario("1234567890", "Andres", "correo-invalido", "hashedPw", EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
+        });
+        assertEquals("Por favor ingrese una dirección de correo electrónico válida", exception.getMessage());
     }
 
     @Test
@@ -81,5 +107,25 @@ class UsuarioTest {
         usuario.asignarNuevoCodigo(codigo);
         
         assertFalse(usuario.esElegibleParaLimpieza(ahora));
+    }
+    @Test
+    void deberiaLanzarExcepcionConIdInvalido() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            new Usuario("123", "Andres", "andres@mail.com", "Passw0rd!", stubHasher);
+        });
+        assertEquals("El ID debe tener exactamente 10 caracteres numéricos", exception.getMessage());
+        
+        IllegalArgumentException exceptionLetras = assertThrows(IllegalArgumentException.class, () -> {
+            new Usuario("12345ABCDE", "Andres", "andres@mail.com", "Passw0rd!", stubHasher);
+        });
+        assertEquals("El ID debe tener exactamente 10 caracteres numéricos", exceptionLetras.getMessage());
+    }
+
+    @Test
+    void deberiaLanzarExcepcionConNombreInvalido() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            new Usuario("1234567890", "A", "andres@mail.com", "Passw0rd!", stubHasher);
+        });
+        assertEquals("El nombre debe tener al menos 2 caracteres", exception.getMessage());
     }
 }

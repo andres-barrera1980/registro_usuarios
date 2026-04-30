@@ -44,6 +44,7 @@ El proyecto sigue estrictamente el patrón de **Arquitectura Limpia**, dividiend
 src/main/java/co/edu/javeriana/registro/
 ├── domain/                               # Capa Core (Reglas de Negocio)
 │   ├── model/                            # Agregados y Value Objects (Usuario, CodigoValidacion)
+│   │   └── PasswordHasher.java           # Puerto para abstracción de seguridad
 │   └── exception/                        # Excepciones propias del dominio
 ├── application/                          # Capa de Orquestación
 │   ├── interactor/                       # Casos de Uso (Emisión, Activación, Limpieza)
@@ -51,11 +52,13 @@ src/main/java/co/edu/javeriana/registro/
 ├── interfaces/                           # Capa de Interacción de Usuario
 │   └── MenuConsola.java                  # Menú interactivo CLI
 ├── infrastructure/                       # Capa de Infraestructura Técnica
-│   └── adapter/out/persistence/          # Adaptadores de Persistencia
-│       ├── JsonUsuarioGateway.java       # Implementación JSON
-│       └── jpa/                          # Implementación Relacional (JPA/SQLite)
-│           ├── SqliteUsuarioGateway.java # Adaptador JPA
-│           └── UsuarioJpaEntity.java     # Entidad de persistencia (Independiente del Dominio)
+│   └── adapter/out/                      # Adaptadores Externos
+│       ├── BcryptPasswordHasher.java     # Implementación de seguridad usando BCrypt
+│       └── persistence/                  # Adaptadores de Persistencia
+│           ├── JsonUsuarioGateway.java   # Implementación JSON
+│           └── jpa/                      # Implementación Relacional (JPA/SQLite)
+│               ├── SqliteUsuarioGateway.java # Adaptador JPA
+│               └── UsuarioJpaEntity.java # Entidad de persistencia
 └── Main.java                             # Punto de entrada / Inyección de Dependencias
 ```
 
@@ -65,6 +68,7 @@ src/main/java/co/edu/javeriana/registro/
 
 - **Lenguaje**: Java 21
 - **Construcción**: Maven 3.x
+- **Seguridad**: at.favre.lib:bcrypt (BCrypt v0.10.2)
 - **Testing**: JUnit 5, Mockito (100% de cobertura en el Dominio e Interactors mediante TDD).
 - **Persistencia JSON**: Jackson Databind, Jackson JSR310.
 - **Persistencia Relacional**: Hibernate Core 6.4, SQLite JDBC.

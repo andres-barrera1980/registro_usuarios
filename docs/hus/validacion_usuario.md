@@ -20,6 +20,14 @@ AC-003: Si el usuario solicita un nuevo correo de verificación, cualquier códi
 
 AC-004: El sistema debe confirmar al usuario que el nuevo correo ha sido enviado exitosamente.
 
+AC-005: El sistema debe validar que la dirección de correo electrónico proporcionada tenga una estructura válida (ej. usuario@dominio.com) antes de procesar el registro.
+
+AC-006: La contraseña proporcionada por el usuario debe cumplir reglas estrictas de seguridad (mínimo 8 caracteres, mayúscula, número, especial) y almacenarse únicamente en formato hash (ej. BCrypt) de forma irreversible.
+
+AC-007: El sistema debe validar que el nombre de usuario tenga una longitud mínima de 2 caracteres.
+
+AC-008: El sistema debe validar que el ID del usuario contenga exactamente 10 caracteres numéricos, sin letras ni símbolos.
+
 ## 2. Validación de Identidad y Activación de Cuenta
 
 Como usuario con una cuenta "No Verificada",
@@ -69,3 +77,11 @@ Definición de "Terminado" (Definition of Done)
 [ ] La anulación de códigos antiguos funciona correctamente al solicitar re-envíos.
 
 [ ] El proceso de eliminación de cuentas obsoletas libera los correos electrónicos exitosamente.
+
+[x] La contraseña del usuario se valida por complejidad y se almacena utilizando hashing irreversible (BCrypt).
+
+[x] El correo electrónico del usuario es validado estructuralmente antes de permitir la creación de la cuenta.
+
+[x] El ID se valida para garantizar que tiene exactamente 10 caracteres numéricos.
+
+[x] El nombre de usuario se valida para asegurar que no esté vacío y tenga un mínimo de 2 caracteres.

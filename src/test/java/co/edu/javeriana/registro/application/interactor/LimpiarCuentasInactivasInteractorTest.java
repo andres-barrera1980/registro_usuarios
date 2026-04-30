@@ -2,6 +2,7 @@ package co.edu.javeriana.registro.application.interactor;
 
 import co.edu.javeriana.registro.application.gateway.UsuarioGateway;
 import co.edu.javeriana.registro.domain.model.CodigoValidacion;
+import co.edu.javeriana.registro.domain.model.EstadoUsuario;
 import co.edu.javeriana.registro.domain.model.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,10 +34,12 @@ class LimpiarCuentasInactivasInteractorTest {
     void deberiaEliminarSoloCuentasElegibles() {
         LocalDateTime ahora = LocalDateTime.now();
         
-        Usuario elegible = new Usuario("1", "User1", "user1@test.com");
+        Usuario elegible = new Usuario("1", "User1", "user1@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, ahora);
         elegible.asignarNuevoCodigo(new CodigoValidacion("123", ahora.minusDays(8)));
         
-        Usuario noElegible = new Usuario("2", "User2", "user2@test.com");
+        Usuario noElegible = new Usuario("2", "User2", "user2@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, ahora);
         noElegible.asignarNuevoCodigo(new CodigoValidacion("456", ahora.minusDays(2)));
         
         List<Usuario> lista = Arrays.asList(elegible, noElegible);

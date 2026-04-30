@@ -87,11 +87,11 @@ public class JsonUsuarioGateway implements UsuarioGateway {
         escribirUsuarios(dtos);
     }
 
-    // DTO Privado para serialización sin acoplar el Dominio
     private static class UsuarioDTO {
         public String id;
         public String nombre;
         public String email;
+        public String passwordHash;
         public EstadoUsuario estado;
         public String codigoValidacion;
         public LocalDateTime fechaExpiracionCodigo;
@@ -104,6 +104,7 @@ public class JsonUsuarioGateway implements UsuarioGateway {
             dto.id = u.getId();
             dto.nombre = u.getNombre();
             dto.email = u.getEmail();
+            dto.passwordHash = u.getPasswordHash();
             dto.estado = u.getEstado();
             dto.fechaRegistro = u.getFechaRegistro();
             if (u.getCodigoValidacionActivo() != null) {
@@ -114,27 +115,11 @@ public class JsonUsuarioGateway implements UsuarioGateway {
         }
 
         public Usuario toDomain() {
-            Usuario u = new Usuario(this.id, this.nombre, this.email);
-            // Usamos reflection o setters package-private para reconstruir el estado.
-            // Dado que Usuario no tiene setters, podemos modificar el constructor o inyectar via reflection.
-            // Para mantener el diseño limpio del Dominio, en este caso simplificado reconstruimos y asignamos.
-            try {
-                java.lang.reflect.Field estadoField = Usuario.class.getDeclaredField("estado");
-                estadoField.setAccessible(true);
-                estadoField.set(u, this.estado);
-
-                java.lang.reflect.Field fechaRegistroField = Usuario.class.getDeclaredField("fechaRegistro");
-                fechaRegistroField.setAccessible(true);
-                fechaRegistroField.set(u, this.fechaRegistro);
-
-                if (this.codigoValidacion != null && this.fechaExpiracionCodigo != null) {
-                    CodigoValidacion cv = new CodigoValidacion(this.codigoValidacion, this.fechaExpiracionCodigo);
-                    java.lang.reflect.Field cvField = Usuario.class.getDeclaredField("codigoValidacionActivo");
-                    cvField.setAccessible(true);
-                    cvField.set(u, cv);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Error reconstruyendo Usuario desde DB", e);
+            Usuario u = new Usuario(this.id, this.nombre, this.email, this.passwordHash,
+                                   this.estado, this.fechaRegistro);
+            if (this.codigoValidacion != null && this.fechaExpiracionCodigo != null) {
+                CodigoValidacion cv = new CodigoValidacion(this.codigoValidacion, this.fechaExpiracionCodigo);
+                u.asignarNuevoCodigo(cv);
             }
             return u;
         }

@@ -94,6 +94,7 @@ public class SqliteUsuarioGateway implements UsuarioGateway {
         entity.setId(domain.getId());
         entity.setNombre(domain.getNombre());
         entity.setEmail(domain.getEmail());
+        entity.setPasswordHash(domain.getPasswordHash());
         entity.setEstado(domain.getEstado().name());
         entity.setFechaRegistro(domain.getFechaRegistro());
         
@@ -105,24 +106,14 @@ public class SqliteUsuarioGateway implements UsuarioGateway {
     }
 
     private Usuario toDomain(UsuarioJpaEntity entity) {
-        Usuario u = new Usuario(entity.getId(), entity.getNombre(), entity.getEmail());
-        try {
-            java.lang.reflect.Field estadoField = Usuario.class.getDeclaredField("estado");
-            estadoField.setAccessible(true);
-            estadoField.set(u, EstadoUsuario.valueOf(entity.getEstado()));
+        Usuario u = new Usuario(entity.getId(), entity.getNombre(), entity.getEmail(),
+                               entity.getPasswordHash(),
+                               EstadoUsuario.valueOf(entity.getEstado()),
+                               entity.getFechaRegistro());
 
-            java.lang.reflect.Field fechaRegistroField = Usuario.class.getDeclaredField("fechaRegistro");
-            fechaRegistroField.setAccessible(true);
-            fechaRegistroField.set(u, entity.getFechaRegistro());
-
-            if (entity.getCodigoValidacion() != null && entity.getFechaExpiracionCodigo() != null) {
-                CodigoValidacion cv = new CodigoValidacion(entity.getCodigoValidacion(), entity.getFechaExpiracionCodigo());
-                java.lang.reflect.Field cvField = Usuario.class.getDeclaredField("codigoValidacionActivo");
-                cvField.setAccessible(true);
-                cvField.set(u, cv);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Error reconstruyendo Usuario desde DB", e);
+        if (entity.getCodigoValidacion() != null && entity.getFechaExpiracionCodigo() != null) {
+            CodigoValidacion cv = new CodigoValidacion(entity.getCodigoValidacion(), entity.getFechaExpiracionCodigo());
+            u.asignarNuevoCodigo(cv);
         }
         return u;
     }

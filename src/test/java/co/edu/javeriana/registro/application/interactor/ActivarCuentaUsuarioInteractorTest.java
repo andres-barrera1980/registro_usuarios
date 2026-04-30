@@ -32,7 +32,8 @@ class ActivarCuentaUsuarioInteractorTest {
 
     @Test
     void deberiaActivarCuentaCorrectamente() {
-        Usuario usuario = new Usuario("1", "Andres", "andres@test.com");
+        Usuario usuario = new Usuario("1", "Andres", "andres@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         CodigoValidacion codigo = new CodigoValidacion("123456", LocalDateTime.now().plusHours(24));
         usuario.asignarNuevoCodigo(codigo);
         
@@ -46,7 +47,8 @@ class ActivarCuentaUsuarioInteractorTest {
 
     @Test
     void deberiaLanzarExcepcionConCodigoInvalido() {
-        Usuario usuario = new Usuario("1", "Andres", "andres@test.com");
+        Usuario usuario = new Usuario("1", "Andres", "andres@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         CodigoValidacion codigo = new CodigoValidacion("123456", LocalDateTime.now().plusHours(24));
         usuario.asignarNuevoCodigo(codigo);
         

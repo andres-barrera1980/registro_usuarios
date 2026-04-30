@@ -40,7 +40,8 @@ class SqliteUsuarioGatewayTest {
 
     @Test
     void deberiaGuardarYRecuperarUnUsuario() {
-        Usuario usuario = new Usuario("1", "Jane Doe", "jane@test.com");
+        Usuario usuario = new Usuario("1", "Jane Doe", "jane@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         gateway.guardar(usuario);
 
         Optional<Usuario> recuperado = gateway.buscarPorEmail("jane@test.com");
@@ -52,7 +53,8 @@ class SqliteUsuarioGatewayTest {
 
     @Test
     void deberiaActualizarUsuarioExistente() {
-        Usuario usuario = new Usuario("1", "Jane Doe", "jane@test.com");
+        Usuario usuario = new Usuario("1", "Jane Doe", "jane@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         gateway.guardar(usuario);
 
         Usuario elMismo = gateway.buscarPorEmail("jane@test.com").get();
@@ -66,7 +68,8 @@ class SqliteUsuarioGatewayTest {
 
     @Test
     void deberiaEliminarUnUsuario() {
-        Usuario usuario = new Usuario("1", "Jane Doe", "jane@test.com");
+        Usuario usuario = new Usuario("1", "Jane Doe", "jane@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         gateway.guardar(usuario);
         
         gateway.eliminar(usuario);

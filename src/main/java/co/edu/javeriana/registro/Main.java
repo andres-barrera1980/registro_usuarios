@@ -5,7 +5,8 @@ import co.edu.javeriana.registro.application.gateway.UsuarioGateway;
 import co.edu.javeriana.registro.application.interactor.ActivarCuentaUsuarioInteractor;
 import co.edu.javeriana.registro.application.interactor.EmitirCodigoValidacionInteractor;
 import co.edu.javeriana.registro.application.interactor.LimpiarCuentasInactivasInteractor;
-import co.edu.javeriana.registro.domain.model.Usuario;
+import co.edu.javeriana.registro.domain.model.PasswordHasher;
+import co.edu.javeriana.registro.infrastructure.adapter.out.BcryptPasswordHasher;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -26,10 +27,13 @@ public class Main {
         ActivarCuentaUsuarioInteractor activarInteractor = new ActivarCuentaUsuarioInteractor(persistenciaGateway);
         LimpiarCuentasInactivasInteractor limpiarInteractor = new LimpiarCuentasInactivasInteractor(persistenciaGateway);
 
+        // Password hasher (BCrypt)
+        PasswordHasher passwordHasher = new BcryptPasswordHasher();
+
         // Inicializar Menu y mostrar
         co.edu.javeriana.registro.interfaces.MenuConsola menu = 
             new co.edu.javeriana.registro.interfaces.MenuConsola(
-                persistenciaGateway, emitirInteractor, activarInteractor, limpiarInteractor);
+                persistenciaGateway, emitirInteractor, activarInteractor, limpiarInteractor, passwordHasher);
         
         menu.mostrarMenu();
     }

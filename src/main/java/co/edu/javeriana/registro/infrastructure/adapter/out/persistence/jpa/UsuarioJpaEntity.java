@@ -23,6 +23,9 @@ public class UsuarioJpaEntity {
     @Column(nullable = false)
     private String estado;
 
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
     private String codigoValidacion;
 
     private LocalDateTime fechaExpiracionCodigo;
@@ -44,6 +47,9 @@ public class UsuarioJpaEntity {
 
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
+
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
     public String getCodigoValidacion() { return codigoValidacion; }
     public void setCodigoValidacion(String codigoValidacion) { this.codigoValidacion = codigoValidacion; }

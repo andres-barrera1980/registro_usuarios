@@ -29,7 +29,8 @@ class JsonUsuarioGatewayTest {
 
     @Test
     void deberiaGuardarYRecuperarUnUsuario() {
-        Usuario usuario = new Usuario("1", "John Doe", "john@test.com");
+        Usuario usuario = new Usuario("1234567890", "John Doe", "john@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         gateway.guardar(usuario);
 
         Optional<Usuario> recuperado = gateway.buscarPorEmail("john@test.com");
@@ -41,7 +42,8 @@ class JsonUsuarioGatewayTest {
 
     @Test
     void deberiaActualizarUsuarioExistente() {
-        Usuario usuario = new Usuario("1", "John Doe", "john@test.com");
+        Usuario usuario = new Usuario("1234567890", "John Doe", "john@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         gateway.guardar(usuario);
 
         // Agregamos código (actualiza)
@@ -56,7 +58,8 @@ class JsonUsuarioGatewayTest {
 
     @Test
     void deberiaEliminarUnUsuario() {
-        Usuario usuario = new Usuario("1", "John Doe", "john@test.com");
+        Usuario usuario = new Usuario("1234567890", "John Doe", "john@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         gateway.guardar(usuario);
         
         gateway.eliminar(usuario);

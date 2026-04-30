@@ -2,6 +2,7 @@ package co.edu.javeriana.registro.application.interactor;
 
 import co.edu.javeriana.registro.application.gateway.EmailGateway;
 import co.edu.javeriana.registro.application.gateway.UsuarioGateway;
+import co.edu.javeriana.registro.domain.model.EstadoUsuario;
 import co.edu.javeriana.registro.domain.model.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +37,8 @@ class EmitirCodigoValidacionInteractorTest {
 
     @Test
     void deberiaEmitirCodigoParaUsuarioExistente() {
-        Usuario usuario = new Usuario("1", "Andres", "andres@test.com");
+        Usuario usuario = new Usuario("1", "Andres", "andres@test.com", "hashedPw",
+                EstadoUsuario.NO_VERIFICADO, LocalDateTime.now());
         when(usuarioGateway.buscarPorEmail("andres@test.com")).thenReturn(Optional.of(usuario));
 
         interactor.ejecutar("andres@test.com");
