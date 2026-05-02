@@ -30,6 +30,12 @@ public class UsuarioJpaEntity {
     @Column(nullable = false)
     private LocalDateTime fechaRegistro;
 
+    @Column(nullable = true)
+    private String password;
+
+    @jakarta.persistence.Embedded
+    private TokenRecuperacionJpaEmbeddable tokenRecuperacion;
+
     public UsuarioJpaEntity() {}
 
     // Getters and Setters
@@ -53,4 +59,10 @@ public class UsuarioJpaEntity {
 
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
     public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public TokenRecuperacionJpaEmbeddable getTokenRecuperacion() { return tokenRecuperacion; }
+    public void setTokenRecuperacion(TokenRecuperacionJpaEmbeddable tokenRecuperacion) { this.tokenRecuperacion = tokenRecuperacion; }
 }

@@ -3,6 +3,8 @@ package co.edu.javeriana.registro.domain.model;
 import co.edu.javeriana.registro.domain.exception.CodigoExpiradoException;
 import co.edu.javeriana.registro.domain.exception.CodigoInvalidoException;
 import co.edu.javeriana.registro.domain.exception.CuentaYaActivaException;
+import co.edu.javeriana.registro.domain.exception.UsuarioBloqueadoException;
+import co.edu.javeriana.registro.domain.exception.TokenInvalidoException;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -11,8 +13,10 @@ public class Usuario {
     private final String id;
     private final String nombre;
     private final String email;
+    private String password;
     private EstadoUsuario estado;
     private CodigoValidacion codigoValidacionActivo;
+    private TokenRecuperacion tokenRecuperacion;
     private final LocalDateTime fechaRegistro;
 
     public Usuario(String id, String nombre, String email) {
@@ -22,6 +26,7 @@ public class Usuario {
         this.estado = EstadoUsuario.NO_VERIFICADO;
         this.fechaRegistro = LocalDateTime.now();
     }
+
 
     public void asignarNuevoCodigo(CodigoValidacion nuevoCodigo) {
         if (this.estado == EstadoUsuario.ACTIVO) {
@@ -59,6 +64,40 @@ public class Usuario {
         }
 
         return codigoValidacionActivo.getFechaExpiracion().plusDays(7).isBefore(fechaActual);
+    }
+
+    public TokenRecuperacion generarTokenRecuperacion(String tokenString, LocalDateTime expiracion) {
+        if (this.estado == EstadoUsuario.BLOQUEADO) {
+            throw new UsuarioBloqueadoException();
+        }
+        
+        this.tokenRecuperacion = new TokenRecuperacion(tokenString, expiracion);
+        return this.tokenRecuperacion;
+    }
+
+    public void restablecerPassword(String nuevoPassword, TokenRecuperacion token, LocalDateTime fechaActual) {
+        if (this.tokenRecuperacion == null || !this.tokenRecuperacion.getToken().equals(token.getToken())) {
+            throw new TokenInvalidoException();
+        }
+        
+        if (!this.tokenRecuperacion.esValido(fechaActual)) {
+            throw new TokenInvalidoException();
+        }
+
+        this.password = nuevoPassword;
+        this.tokenRecuperacion.marcarComoUsado();
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public TokenRecuperacion getTokenRecuperacion() {
+        return tokenRecuperacion;
     }
 
     // Getters

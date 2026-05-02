@@ -18,18 +18,19 @@ public class Main {
         jakarta.persistence.EntityManagerFactory emf = jakarta.persistence.Persistence.createEntityManagerFactory("registro_usuarios_pu");
         UsuarioGateway persistenciaGateway = new co.edu.javeriana.registro.infrastructure.adapter.out.persistence.jpa.SqliteUsuarioGateway(emf);
 
-        EmailGateway consolaEmailGateway = (emailDestino, codigo) -> 
-            System.out.println("[EMAIL] Enviando a " + emailDestino + " el código de validación: " + codigo);
+        EmailGateway consolaEmailGateway = new co.edu.javeriana.registro.infrastructure.adapter.out.ConsoleEmailGateway();
 
         // Inicializar interactors
         EmitirCodigoValidacionInteractor emitirInteractor = new EmitirCodigoValidacionInteractor(persistenciaGateway, consolaEmailGateway);
         ActivarCuentaUsuarioInteractor activarInteractor = new ActivarCuentaUsuarioInteractor(persistenciaGateway);
         LimpiarCuentasInactivasInteractor limpiarInteractor = new LimpiarCuentasInactivasInteractor(persistenciaGateway);
+        co.edu.javeriana.registro.application.interactor.SolicitarRecuperacionInteractor solicitarInteractor = new co.edu.javeriana.registro.application.interactor.SolicitarRecuperacionInteractor(persistenciaGateway, consolaEmailGateway);
+        co.edu.javeriana.registro.application.interactor.RestablecerPasswordInteractor restablecerInteractor = new co.edu.javeriana.registro.application.interactor.RestablecerPasswordInteractor(persistenciaGateway, consolaEmailGateway);
 
         // Inicializar Menu y mostrar
         co.edu.javeriana.registro.interfaces.MenuConsola menu = 
             new co.edu.javeriana.registro.interfaces.MenuConsola(
-                persistenciaGateway, emitirInteractor, activarInteractor, limpiarInteractor);
+                persistenciaGateway, emitirInteractor, activarInteractor, limpiarInteractor, solicitarInteractor, restablecerInteractor);
         
         menu.mostrarMenu();
     }

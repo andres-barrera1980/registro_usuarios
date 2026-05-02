@@ -92,10 +92,14 @@ public class JsonUsuarioGateway implements UsuarioGateway {
         public String id;
         public String nombre;
         public String email;
+        public String password;
         public EstadoUsuario estado;
         public String codigoValidacion;
         public LocalDateTime fechaExpiracionCodigo;
         public LocalDateTime fechaRegistro;
+        public String tokenRecuperacion;
+        public LocalDateTime expiracionTokenRecuperacion;
+        public Boolean tokenRecuperacionUsado;
 
         public UsuarioDTO() {} // Jackson
 
@@ -104,11 +108,17 @@ public class JsonUsuarioGateway implements UsuarioGateway {
             dto.id = u.getId();
             dto.nombre = u.getNombre();
             dto.email = u.getEmail();
+            dto.password = u.getPassword();
             dto.estado = u.getEstado();
             dto.fechaRegistro = u.getFechaRegistro();
             if (u.getCodigoValidacionActivo() != null) {
                 dto.codigoValidacion = u.getCodigoValidacionActivo().getCodigo();
                 dto.fechaExpiracionCodigo = u.getCodigoValidacionActivo().getFechaExpiracion();
+            }
+            if (u.getTokenRecuperacion() != null) {
+                dto.tokenRecuperacion = u.getTokenRecuperacion().getToken();
+                dto.expiracionTokenRecuperacion = u.getTokenRecuperacion().getFechaExpiracion();
+                dto.tokenRecuperacionUsado = u.getTokenRecuperacion().isUsado();
             }
             return dto;
         }
@@ -132,6 +142,19 @@ public class JsonUsuarioGateway implements UsuarioGateway {
                     java.lang.reflect.Field cvField = Usuario.class.getDeclaredField("codigoValidacionActivo");
                     cvField.setAccessible(true);
                     cvField.set(u, cv);
+                }
+
+                u.setPassword(this.password);
+
+                if (this.tokenRecuperacion != null) {
+                    co.edu.javeriana.registro.domain.model.TokenRecuperacion tr = new co.edu.javeriana.registro.domain.model.TokenRecuperacion(
+                        this.tokenRecuperacion,
+                        this.expiracionTokenRecuperacion,
+                        Boolean.TRUE.equals(this.tokenRecuperacionUsado)
+                    );
+                    java.lang.reflect.Field tokenField = Usuario.class.getDeclaredField("tokenRecuperacion");
+                    tokenField.setAccessible(true);
+                    tokenField.set(u, tr);
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Error reconstruyendo Usuario desde DB", e);

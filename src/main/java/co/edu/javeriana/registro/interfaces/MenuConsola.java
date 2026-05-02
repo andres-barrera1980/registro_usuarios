@@ -15,17 +15,23 @@ public class MenuConsola {
     private final EmitirCodigoValidacionInteractor emitirInteractor;
     private final ActivarCuentaUsuarioInteractor activarInteractor;
     private final LimpiarCuentasInactivasInteractor limpiarInteractor;
+    private final co.edu.javeriana.registro.application.interactor.SolicitarRecuperacionInteractor solicitarInteractor;
+    private final co.edu.javeriana.registro.application.interactor.RestablecerPasswordInteractor restablecerInteractor;
     private final Scanner scanner;
 
     public MenuConsola(
             UsuarioGateway usuarioGateway,
             EmitirCodigoValidacionInteractor emitirInteractor,
             ActivarCuentaUsuarioInteractor activarInteractor,
-            LimpiarCuentasInactivasInteractor limpiarInteractor) {
+            LimpiarCuentasInactivasInteractor limpiarInteractor,
+            co.edu.javeriana.registro.application.interactor.SolicitarRecuperacionInteractor solicitarInteractor,
+            co.edu.javeriana.registro.application.interactor.RestablecerPasswordInteractor restablecerInteractor) {
         this.usuarioGateway = usuarioGateway;
         this.emitirInteractor = emitirInteractor;
         this.activarInteractor = activarInteractor;
         this.limpiarInteractor = limpiarInteractor;
+        this.solicitarInteractor = solicitarInteractor;
+        this.restablecerInteractor = restablecerInteractor;
         this.scanner = new Scanner(System.in);
     }
 
@@ -37,7 +43,9 @@ public class MenuConsola {
             System.out.println("1. Registrar nuevo usuario y emitir código");
             System.out.println("2. Activar cuenta de usuario");
             System.out.println("3. Ejecutar limpieza de cuentas inactivas");
-            System.out.println("4. Salir");
+            System.out.println("4. Solicitar recuperación de contraseña");
+            System.out.println("5. Restablecer contraseña (con token)");
+            System.out.println("6. Salir");
             System.out.print("Seleccione una opción: ");
 
             String opcion = scanner.nextLine();
@@ -53,6 +61,12 @@ public class MenuConsola {
                     limpiarCuentas();
                     break;
                 case "4":
+                    solicitarRecuperacion();
+                    break;
+                case "5":
+                    restablecerPassword();
+                    break;
+                case "6":
                     salir = true;
                     System.out.println("Saliendo de la aplicación...");
                     break;
@@ -101,5 +115,31 @@ public class MenuConsola {
         System.out.println("Iniciando proceso de limpieza...");
         limpiarInteractor.ejecutar();
         System.out.println("Proceso completado.");
+    }
+
+    private void solicitarRecuperacion() {
+        System.out.print("Ingrese su email para recuperar contraseña: ");
+        String email = scanner.nextLine();
+        
+        System.out.println("Procesando solicitud...");
+        solicitarInteractor.ejecutar(email);
+        // Respuesta genérica de seguridad
+        System.out.println("Si el correo existe en nuestro sistema y está activo, recibirá un enlace de recuperación pronto.");
+    }
+
+    private void restablecerPassword() {
+        System.out.print("Ingrese su email: ");
+        String email = scanner.nextLine();
+        System.out.print("Ingrese el token de recuperación recibido por correo: ");
+        String token = scanner.nextLine();
+        System.out.print("Ingrese su nueva contraseña: ");
+        String password = scanner.nextLine();
+
+        try {
+            restablecerInteractor.ejecutar(email, token, password);
+            System.out.println("Contraseña restablecida exitosamente. Puede iniciar sesión con su nueva contraseña.");
+        } catch (Exception e) {
+            System.out.println("Error al restablecer contraseña: " + e.getMessage());
+        }
     }
 }

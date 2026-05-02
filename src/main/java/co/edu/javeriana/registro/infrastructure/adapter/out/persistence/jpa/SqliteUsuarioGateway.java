@@ -96,10 +96,20 @@ public class SqliteUsuarioGateway implements UsuarioGateway {
         entity.setEmail(domain.getEmail());
         entity.setEstado(domain.getEstado().name());
         entity.setFechaRegistro(domain.getFechaRegistro());
+        entity.setPassword(domain.getPassword());
         
         if (domain.getCodigoValidacionActivo() != null) {
             entity.setCodigoValidacion(domain.getCodigoValidacionActivo().getCodigo());
             entity.setFechaExpiracionCodigo(domain.getCodigoValidacionActivo().getFechaExpiracion());
+        }
+
+        if (domain.getTokenRecuperacion() != null) {
+            TokenRecuperacionJpaEmbeddable embeddable = new TokenRecuperacionJpaEmbeddable(
+                domain.getTokenRecuperacion().getToken(),
+                domain.getTokenRecuperacion().getFechaExpiracion(),
+                domain.getTokenRecuperacion().isUsado()
+            );
+            entity.setTokenRecuperacion(embeddable);
         }
         return entity;
     }
@@ -120,6 +130,19 @@ public class SqliteUsuarioGateway implements UsuarioGateway {
                 java.lang.reflect.Field cvField = Usuario.class.getDeclaredField("codigoValidacionActivo");
                 cvField.setAccessible(true);
                 cvField.set(u, cv);
+            }
+
+            u.setPassword(entity.getPassword());
+
+            if (entity.getTokenRecuperacion() != null && entity.getTokenRecuperacion().getToken() != null) {
+                co.edu.javeriana.registro.domain.model.TokenRecuperacion token = new co.edu.javeriana.registro.domain.model.TokenRecuperacion(
+                    entity.getTokenRecuperacion().getToken(),
+                    entity.getTokenRecuperacion().getFechaExpiracion(),
+                    entity.getTokenRecuperacion().isUsado()
+                );
+                java.lang.reflect.Field tokenField = Usuario.class.getDeclaredField("tokenRecuperacion");
+                tokenField.setAccessible(true);
+                tokenField.set(u, token);
             }
         } catch (Exception e) {
             throw new RuntimeException("Error reconstruyendo Usuario desde DB", e);
